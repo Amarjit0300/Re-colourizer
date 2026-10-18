@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Re Colorizer</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='Style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Left Image Section -->
+      <div class="image-section">
+        <div
+          id="imageCarousel"
+          class="carousel slide w-100 h-100"
+          data-bs-ride="carousel"
+        >
+          <div class="carousel-inner h-100">
+            <div class="carousel-item active">
+              <img
+                src="{{ url_for('static', filename='images/closeup-grayscale-shot-american-bald-eagle-dark-background.jpg') }}"
+                alt="Image 1"
+                class="d-block w-100"
+              />
+            </div>
+            <div class="carousel-item">
+              <img
+                src="{{ url_for('static', filename='images/off-road-car-wilderness.jpg') }}"
+                alt="Image 2"
+                class="d-block w-100"
+              />
+            </div>
+            <div class="carousel-item">
+              <img
+                src="{{ url_for('static', filename='images/black-white-jaguar-nature.jpg') }}"
+                alt="Image 3"
+                class="d-block w-100"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Login Section -->
+      <div class="login-section">
+        <div class="login-content">
+          <!-- Re Colorizer Title -->
+          <h1
+            class="text-center font-weight-bold"
+            style="font-size: 3rem; margin-bottom: 20px"
+          >
+            Re Colorizer
+          </h1>
+
+          <!-- Welcome Text -->
+          <p class="welcome-text">Blend Your Images :</p>
+
+          <!-- Login Form -->
+          <div class="login-box">
+            <form id="loginForm" method="POST" action="/login">
+              <div class="mb-3">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="form-control"
+                    placeholder="Username"
+                    required
+                  />
+                  <span class="input-group-text">👤</span>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="input-group">
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control"
+                    placeholder="Password"
+                    required
+                  />
+                  <span class="input-group-text">🔒</span>
+                </div>
+              </div>
+
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <div>
+                  <input type="checkbox" id="rememberMe" />
+                  <label for="rememberMe" class="text-muted">Remember Me</label>
+                </div>
+                <a href="#" class="text-primary fw-semibold"
+                  >Forgot password?</a
+                >
+              </div>
+
+              <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-primary fw-semibold">
+                  Log in
+                </button>
+                <a
+                  href="{{ url_for('signup') }}"
+                  class="btn btn-outline-primary"
+                  >Create an Account</a
+                >
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="footer-text">
+          <div class="footer-box">
+            <strong>Designed by</strong> :<span> Amarjit Singh</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript for Remember Me -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loginForm = document.getElementById("loginForm");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        const rememberMe = document.getElementById("rememberMe");
+
+        // Load saved username if Remember Me was checked
+        if (localStorage.getItem("rememberMe") === "true") {
+          usernameInput.value = localStorage.getItem("username") || "";
+          rememberMe.checked = true;
+        }
+
+        loginForm.addEventListener("submit", function () {
+          if (rememberMe.checked) {
+            localStorage.setItem("username", usernameInput.value);
+            localStorage.setItem("rememberMe", "true");
+          } else {
+            localStorage.removeItem("username");
+            localStorage.setItem("rememberMe", "false");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

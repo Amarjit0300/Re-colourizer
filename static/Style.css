@@ -1,0 +1,377 @@
+/* Reset Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevents scrolling */
+  }
+  
+  /* Main container */
+  .container-fluid {
+    height: 100vh;
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 0;
+  }
+  
+  /* Left Image Section */
+  .image-section {
+    flex: 2;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    margin: 0; /* Ensures no margin causing a gap */
+  }
+  
+  .image-section .carousel {
+    height: 100vh;
+    margin: 0; /* Remove any gap in carousel */
+  }
+  
+  .image-section .carousel-inner {
+    height: 100%;
+  }
+  
+  .image-section .carousel-item {
+    height: 100%;
+  }
+  
+  .image-section img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover; /* Ensures full coverage without stretching */
+    display: block; /* Prevents any space below the image */
+    margin: 0; /* Removes any margin */
+  }
+  
+  /* Right Login Section */
+  .login-section {
+    flex: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  /* Login Box */
+  .login-box {
+    width: 100%;
+    max-width: 370px; /* Slightly wider for better spacing */
+    text-align: center;
+  }
+  
+  /* Logo */
+  .logo {
+    max-width: 220px; /* Slightly larger */
+    margin-bottom: 20px;
+  }
+  
+  /* Input Fields */
+  .form-control {
+    padding: 14px; /* Increased padding */
+    font-size: 17px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Buttons */
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+  }
+  
+  .btn-outline-dark {
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .btn-outline-dark:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.02);
+  }
+  
+  /* Options Section */
+  .d-flex {
+    font-size: 0.9rem;
+  }
+  
+  /* Footer Text */
+  .text-muted {
+    font-size: 0.9rem;
+    color: gray;
+  }
+  
+  /* testing purpose */
+  /* Ensure full height for both sections */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .container-fluid {
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    padding: 0;
+  }
+  /* Smaller text size for Remember Me label */
+  #rememberMe + label {
+    font-size: 0.8rem; /* Adjust size as needed */
+  }
+  
+  /* Smaller text size for Forgot password link */
+  .text-primary.fw-semibold {
+    font-size: 0.8rem; /* Adjust size as needed */
+  }
+  
+  /* Left Image Section */
+  .image-section {
+    flex: 2;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .image-section img {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+  }
+  
+  /* Fix for Bootstrap Carousel */
+  .carousel-inner,
+  .carousel-item {
+    width: 100%;
+    height: 100vh;
+  }
+  
+  /* Right Login Section */
+  .login-section {
+    flex: 1;
+    height: 100vh;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: relative;
+    font-size: 0.85rem; /* Adjust the font size */
+  }
+  /* Further reduce font size inside the login form */
+  .login-box {
+    font-size: 0.75rem; /* Decrease overall font size slightly more */
+  }
+  
+  /* Further reduce font size for input fields */
+  .form-control {
+    font-size: 0.75rem;
+  }
+  
+  /* Further reduce font size for input group icons */
+  .input-group-text {
+    font-size: 0.7rem;
+  }
+  
+  /* Further reduce font size for "Remember Me" and "Forgot Password" */
+  #rememberMe + label,
+  .text-primary.fw-semibold {
+    font-size: 0.7rem;
+  }
+  
+  /* Further reduce font size for buttons */
+  .btn {
+    font-size: 0.8rem;
+  }
+  
+  /* Wraps Logo + Login Box */
+  .login-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 370px;
+    text-align: center;
+  }
+  
+  /* Welcome Text Animation */
+  .welcome-text {
+    font-size: 1.01rem;
+    font-weight: normal;
+    color: rgb(54, 53, 53);
+    margin-top: 56px;
+    text-align: center;
+    opacity: 0;
+    animation: fadeBounce 1.5s ease-out forwards, glowEffect 2s infinite alternate;
+  }
+  
+  /* Smooth Fade-in with Continuous Bouncing */
+  @keyframes fadeBounce {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateY(-8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Subtle Continuous Floating */
+  @keyframes glowEffect {
+    0% {
+      text-shadow: 0 0 2px rgba(14, 12, 12, 0.3);
+      transform: translateY(0);
+    }
+    100% {
+      text-shadow: 0 0 10px rgba(17, 14, 14, 0.6);
+      transform: translateY(5px);
+    }
+  }
+  
+  /* Ensure the logo is positioned at the top */
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: -80px; /* Adjust spacing */
+  }
+  
+  .logo-container img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 1px; /* Adjust as needed */
+  }
+  
+  .login-box {
+    width: 100%;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 0px solid grey; /* Add border */
+    margin: 60px; /* Adds margin around the box */
+    box-shadow: none; /* Ensure no shadow */
+  }
+  
+  /* Button without border */
+  .btn-light {
+    border: none; /* Remove border from the light button */
+  }
+  
+  /* Footer Text */
+  .footer-text {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+  }
+  /* Make input text color grey */
+  .form-control {
+    color: grey;
+  }
+  
+  /* Change placeholder text to grey */
+  .form-control::placeholder {
+    color: grey;
+    opacity: 1; /* Ensures visibility in some browsers */
+  }
+  * Footer Text */ .footer-text {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+    color: grey; /* Light grey color */
+  }
+  
+  .footer-text {
+    bottom: 10px; /* Reduce from 20px to 10px */
+  }
+  
+  /* Make input text color grey */
+  .form-control {
+    color: grey;
+  }
+  
+  /* Change placeholder text to grey */
+  .form-control::placeholder {
+    color: grey;
+    opacity: 1; /* Ensures visibility in some browsers */
+  }
+  
+  /* Footer Box */
+  .footer-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0; /* Adjust padding as needed */
+    background: rgba(211, 211, 211, 0.07); /* Even lighter grey */
+    text-align: center; /* Center the text */
+    width: 100%;
+  }
+  
+  /* Text Styling */
+  .footer-box strong {
+    color: black; /* Keep S-ONE in its original color */
+  }
+  
+  .footer-box span {
+    color: grey; /* Make the rest of the text grey */
+    font-weight: 600;
+  }
+  
+  /* Text Styling */
+  .footer-box span {
+    color: grey;
+    font-weight: 600;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 1024px) {
+    .image-section {
+      display: none;
+    }
+  
+    .login-section {
+      width: 100%;
+      box-shadow: none;
+      height: auto;
+      padding: 40px;
+    }
+  }
+  

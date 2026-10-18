@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recolor Image</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center px-4">
+
+  <div class="bg-white shadow-lg rounded-xl w-full max-w-4xl p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 mb-4">Recolor Image Easily Online</h1>
+      <p class="text-gray-600 mb-6">Upload a black & white image and turn it into a colorized version in seconds.</p>
+      
+      <form id="upload-form" enctype="multipart/form-data">
+        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-100 hover:bg-gray-200 transition">
+          <input type="file" name="file" id="upload" accept="image/*" class="hidden" onchange="previewImage(event)" />
+          <label for="upload" class="cursor-pointer text-blue-600 font-semibold">Click to Upload or Drag & Drop</label>
+          <p class="text-sm text-gray-500 mt-2">Supported formats: JPG, PNG</p>
+        </div>
+
+        <div id="image-preview" class="mt-4 hidden">
+          <p class="text-sm text-gray-500 mb-2">Original Image:</p>
+          <img id="preview" src="#" alt="Preview" class="w-full rounded-lg shadow" />
+        </div>
+
+        <button type="submit" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">Upload & Colorize</button>
+        <p id="loading" class="text-sm text-gray-500 mt-3 hidden">Colorizing image, please wait...</p>
+      </form>
+    </div>
+
+    <div class="text-center">
+      <img src="https://cdn-icons-png.flaticon.com/512/3534/3534068.png" alt="Illustration" class="mx-auto w-40 mb-4" />
+      <p class="text-lg text-gray-600 font-medium">Visualize your photo in vibrant colors</p>
+
+      <div id="color-result" class="mt-6 hidden">
+        <p class="text-sm text-gray-500 mb-2">Colorized Image:</p>
+        <img id="colorImage" src="#" alt="Colorized Image" class="w-full rounded-lg shadow-lg mb-4" />
+        <a id="downloadBtn" download="colorized_image.jpg" class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition">Download Image</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      const preview = document.getElementById('preview');
+      const previewContainer = document.getElementById('image-preview');
+
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        previewContainer.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('upload-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('upload');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please upload an image first.');
+        return;
+      }
+
+      const loading = document.getElementById('loading');
+      const resultContainer = document.getElementById('color-result');
+      const colorImage = document.getElementById('colorImage');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      loading.classList.remove('hidden');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          colorImage.src = data.image_url;
+          downloadBtn.href = data.image_url;
+          resultContainer.classList.remove('hidden');
+        } else {
+          alert('Error: ' + data.error);
+        }
+        loading.classList.add('hidden');
+      })
+      .catch(err => {
+        alert('Upload failed.');
+        console.error(err);
+        loading.classList.add('hidden');
+      });
+    });
+  </script>
+
+</body>
+</html>

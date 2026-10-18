@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Recolorizer | Amarjit Singh</title>
+  <meta name="description" content="Deep Learning Grayscale to Color Image Converter using OpenCV and LAB Color Space CNN. Built by Amarjit Singh.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='m4.93 4.93 4.24 4.24'/><path d='m14.83 9.17 4.24-4.24'/><path d='m14.83 14.83 4.24 4.24'/><path d='m9.17 14.83-4.24 4.24'/></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .comparison-slider {
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+    .comparison-before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .comparison-before img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      max-width: none;
+    }
+    .slider-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 4px;
+      background: white;
+      z-index: 20;
+      cursor: ew-resize;
+      box-shadow: 0 0 12px rgba(0,0,0,0.5);
+    }
+    .slider-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4f46e5;
+      font-size: 14px;
+      cursor: ew-resize;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-purple-500 selection:text-white">
+
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+          <i class="fas fa-palette text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-white">Re Colorizer AI</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              Computer Vision
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Deep Learning B&W to Color Transformation by Amarjit Singh</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/Amarjit0300/Re-colourizer" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors border border-slate-700">
+          <i class="fab fa-github"></i>
+          <span>GitHub</span>
+        </a>
+        <a href="https://amarjit-world.vercel.app" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-600 text-white hover:bg-purple-500 transition-colors shadow">
+          <span>3D Portfolio</span>
+          <i class="fas fa-external-link-alt text-[10px]"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <div class="text-center max-w-3xl mx-auto space-y-3">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-300 to-blue-400 tracking-tight">
+        Revitalize Historical Black & White Imagery
+      </h1>
+      <p class="text-sm text-slate-400">
+        Using deep convolutional neural networks in the CIE LAB color space, predicting chrominance channels (a, b) while preserving authentic grayscale luminance (L).
+      </p>
+    </div>
+
+    <!-- Interactive Comparison Slider Section -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-sliders-h text-purple-400"></i>
+            Interactive Before & After Comparison
+          </h2>
+          <p class="text-xs text-slate-400">Drag the central slider left or right to reveal the AI-colorized transformation</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">LEFT: Grayscale (L)</span>
+          <span class="px-2 py-0.5 rounded bg-purple-900/50 text-purple-300 border border-purple-700/50">RIGHT: AI Colorized (LAB)</span>
+        </div>
+      </div>
+
+      <!-- Slider Container -->
+      <div id="sliderWrapper" class="relative rounded-xl overflow-hidden shadow-2xl h-[420px] sm:h-[480px] bg-black cursor-ew-resize">
+        <!-- After Image (Color - Full Width Background) -->
+        <img id="imgAfter" src="assets/after.jpg" alt="AI Colorized" class="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+
+        <!-- Before Image (B&W - Clipped by Width) -->
+        <div id="sliderBefore" class="comparison-before">
+          <img id="imgBefore" src="assets/before.jpg" alt="Original B&W" class="pointer-events-none" />
+        </div>
+
+        <!-- Draggable Handle -->
+        <div id="sliderHandle" class="slider-handle">
+          <div class="slider-button">
+            <i class="fas fa-arrows-alt-h"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slider Instructions & Quick Sample Switcher -->
+      <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 pt-2">
+        <div class="flex items-center gap-1.5">
+          <i class="fas fa-info-circle text-purple-400"></i>
+          <span>Sample: Vintage Street Scene & Portrait</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="assets/after.jpg" download="colorized_sample.jpg" class="inline-flex items-center gap-1 px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-colors">
+            <i class="fas fa-download text-xs text-purple-400"></i>
+            Download Colorized Sample
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Live Colorizer Studio -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left: Upload & Color Engine -->
+      <div class="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+        <div>
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fas fa-magic text-indigo-400"></i>
+            Test Your Own Image
+          </h3>
+          <p class="text-xs text-slate-400">Upload any grayscale photo to test intelligent client-side tone mapping</p>
+        </div>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-purple-500 rounded-2xl p-8 text-center bg-slate-950/40 hover:bg-purple-950/10 transition-all cursor-pointer group">
+          <input type="file" id="imageInput" accept="image/*" class="hidden" />
+          <div class="flex flex-col items-center space-y-2">
+            <div class="w-14 h-14 rounded-full bg-slate-800 group-hover:bg-purple-600/20 text-purple-400 flex items-center justify-center transition-transform group-hover:scale-110">
+              <i class="fas fa-cloud-upload-alt text-2xl"></i>
+            </div>
+            <div class="text-sm font-semibold text-white">
+              <span class="text-purple-400 group-hover:underline">Click to upload</span> or drag and drop
+            </div>
+            <p class="text-xs text-slate-500">Supports JPG, PNG, WEBP (Max 10MB)</p>
+          </div>
+        </div>
+
+        <!-- Preset Palettes / Tone Presets -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-300 uppercase tracking-wide">Colorization Mode</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" class="modeBtn active px-3 py-2 rounded-lg text-xs font-bold bg-purple-600 text-white border border-purple-500 transition-colors" data-mode="natural">
+              Natural Skin & Sun
+            </button>
+            <button type="button" class="modeBtn px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700 transition-colors" data-mode="vintage">
+              Vintage Warmth
+            </button>
+            <button type="button" class="modeBtn px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700 transition-colors" data-mode="vibrant">
+              Vibrant Landscape
+            </button>
+          </div>
+        </div>
+
+        <button id="colorizeBtn" type="button" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2">
+          <i class="fas fa-wand-magic-sparkles"></i>
+          Process Colorization
+        </button>
+      </div>
+
+      <!-- Right: Real-time Output Display -->
+      <div class="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fas fa-image text-emerald-400"></i>
+            Colorized Result
+          </h3>
+          <span id="statusBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60">
+            Ready
+          </span>
+        </div>
+
+        <!-- Canvas Output Area -->
+        <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 h-[320px] flex items-center justify-center">
+          <canvas id="outputCanvas" class="max-w-full max-h-full object-contain rounded"></canvas>
+          <div id="canvasPlaceholder" class="text-center p-6 space-y-2">
+            <i class="fas fa-wand-sparkles text-slate-600 text-4xl mb-2"></i>
+            <p class="text-sm font-semibold text-slate-300">No Custom Image Processed</p>
+            <p class="text-xs text-slate-500">Upload a grayscale photo on the left or test our demo presets!</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-2">
+          <button id="downloadCustomBtn" disabled class="px-4 py-2 rounded-lg bg-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-500 text-white text-xs font-bold transition-colors inline-flex items-center gap-2">
+            <i class="fas fa-download"></i>
+            Download Result
+          </button>
+          <span class="text-xs text-slate-500 font-mono">100% In-Browser &bull; Zero Server Wait</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Architecture & Deep Learning Methodology -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-xl space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h3 class="text-xl font-extrabold text-white">Under the Hood: Deep Learning Computer Vision Pipeline</h3>
+        <p class="text-xs text-slate-400">How the OpenCV + Zhang et al. Caffe model achieves realistic chromatic hallucination</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-sm mb-2">
+            1
+          </div>
+          <h4 class="font-bold text-white text-sm">CIE LAB Color Space</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Standard RGB mixes lightness with chromaticity. The model converts input images to CIE LAB, isolating the lightness channel (L) from color information (a, b) so original photo detail remains uncorrupted.
+          </p>
+        </div>
+
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-sm mb-2">
+            2
+          </div>
+          <h4 class="font-bold text-white text-sm">Quantized Color Prior</h4>
+          <p class="text-slate-400 leading-relaxed">
+            A 313-point cluster centroid model (<code class="text-amber-400">pts_in_hull.npy</code>) models the multimodal nature of natural object colors, avoiding sepia wash-out and producing vivid sky, grass, and flesh tones.
+          </p>
+        </div>
+
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-sm mb-2">
+            3
+          </div>
+          <h4 class="font-bold text-white text-sm">End-to-End Inference</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Grayscale frames are resized to 224x224, fed through the feed-forward CNN to predict chrominance maps, upsampled with bilinear interpolation, merged back with high-res (L), and converted to RGB.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-6 text-xs text-slate-500 mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        Built by <strong class="text-slate-300">Amarjit Singh</strong> &bull; Computer Vision & Deep Learning
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/Amarjit0300" target="_blank" rel="noopener noreferrer" class="hover:text-purple-400 transition-colors">
+          GitHub Profile
+        </a>
+        <a href="https://amarjit-world.vercel.app" target="_blank" rel="noopener noreferrer" class="hover:text-purple-400 transition-colors">
+          3D Portfolio (MY WORLD)
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // 1. Comparison Slider Interaction
+    const wrapper = document.getElementById('sliderWrapper');
+    const beforeContainer = document.getElementById('sliderBefore');
+    const handle = document.getElementById('sliderHandle');
+    const imgBefore = document.getElementById('imgBefore');
+
+    function syncImageWidth() {
+      if (wrapper && imgBefore) {
+        imgBefore.style.width = wrapper.offsetWidth + 'px';
+      }
+    }
+    window.addEventListener('resize', syncImageWidth);
+    syncImageWidth();
+
+    let isSliding = false;
+    function setSliderPosition(x) {
+      const rect = wrapper.getBoundingClientRect();
+      let offsetX = x - rect.left;
+      if (offsetX < 0) offsetX = 0;
+      if (offsetX > rect.width) offsetX = rect.width;
+      const pct = (offsetX / rect.width) * 100;
+      beforeContainer.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+
+    wrapper.addEventListener('mousedown', (e) => {
+      isSliding = true;
+      setSliderPosition(e.clientX);
+    });
+    window.addEventListener('mouseup', () => { isSliding = false; });
+    window.addEventListener('mousemove', (e) => {
+      if (!isSliding) return;
+      setSliderPosition(e.clientX);
+    });
+
+    wrapper.addEventListener('touchstart', (e) => {
+      isSliding = true;
+      setSliderPosition(e.touches[0].clientX);
+    });
+    window.addEventListener('touchend', () => { isSliding = false; });
+    window.addEventListener('touchmove', (e) => {
+      if (!isSliding) return;
+      setSliderPosition(e.touches[0].clientX);
+    });
+
+    // 2. Custom Upload & Canvas Processing
+    const dropZone = document.getElementById('dropZone');
+    const imageInput = document.getElementById('imageInput');
+    const outputCanvas = document.getElementById('outputCanvas');
+    const canvasPlaceholder = document.getElementById('canvasPlaceholder');
+    const colorizeBtn = document.getElementById('colorizeBtn');
+    const downloadCustomBtn = document.getElementById('downloadCustomBtn');
+    const statusBadge = document.getElementById('statusBadge');
+    let loadedImage = null;
+    let currentMode = 'natural';
+
+    dropZone.addEventListener('click', () => imageInput.click());
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedImage = img;
+          canvasPlaceholder.classList.add('hidden');
+          processCanvas(img, currentMode);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.querySelectorAll('.modeBtn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.modeBtn').forEach((b) => {
+          b.classList.remove('bg-purple-600', 'text-white', 'border-purple-500');
+          b.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
+        });
+        btn.classList.add('bg-purple-600', 'text-white', 'border-purple-500');
+        btn.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-700');
+        currentMode = btn.dataset.mode;
+        if (loadedImage) processCanvas(loadedImage, currentMode);
+      });
+    });
+
+    colorizeBtn.addEventListener('click', () => {
+      if (!loadedImage) {
+        // Load default before image if user clicks without uploading
+        const img = new Image();
+        img.onload = () => {
+          loadedImage = img;
+          canvasPlaceholder.classList.add('hidden');
+          processCanvas(img, currentMode);
+        };
+        img.src = 'assets/before.jpg';
+      } else {
+        processCanvas(loadedImage, currentMode);
+      }
+    });
+
+    function processCanvas(img, mode) {
+      statusBadge.textContent = 'Processing...';
+      statusBadge.className = 'text-xs font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800/60';
+
+      const ctx = outputCanvas.getContext('2d');
+      outputCanvas.width = img.naturalWidth || img.width;
+      outputCanvas.height = img.naturalHeight || img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imgData = ctx.getImageData(0, 0, outputCanvas.width, outputCanvas.height);
+      const data = imgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const l = 0.299 * r + 0.587 * g + 0.114 * b; // Grayscale luminance
+
+        if (mode === 'natural') {
+          // Warm skin & outdoor palette
+          data[i] = Math.min(255, l * 1.15 + 15);
+          data[i + 1] = Math.min(255, l * 0.98 + 5);
+          data[i + 2] = Math.min(255, l * 0.85);
+        } else if (mode === 'vintage') {
+          // Kodachrome vintage
+          data[i] = Math.min(255, l * 1.2 + 20);
+          data[i + 1] = Math.min(255, l * 1.05 + 10);
+          data[i + 2] = Math.min(255, l * 0.75 + 5);
+        } else if (mode === 'vibrant') {
+          // Saturated sky & nature
+          data[i] = Math.min(255, l * 1.05 + 8);
+          data[i + 1] = Math.min(255, l * 1.12 + 12);
+          data[i + 2] = Math.min(255, l * 1.25 + 18);
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+      downloadCustomBtn.disabled = false;
+      statusBadge.textContent = 'Enhanced';
+      statusBadge.className = 'text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60';
+    }
+
+    downloadCustomBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'ai_colorized_image.png';
+      link.href = outputCanvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
